@@ -1,55 +1,29 @@
-name: Build and Deploy
+name: Build and distribute
 
 on:
   push:
-    branches: [main]
-
-env:
-  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-  FIREBASE_APP_ID: your_firebase_app_id_here
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-distribute:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v1
-        with:
-          channel: "stable"
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1.5.1
+
+      - name: Get packages
+        run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --split-per-abi
+        run: flutter build apk
 
-      - name: Build IPA
-        run: flutter build ios --release --no-codesign
-
-      - name: Build Web
-        run: flutter build web --release
-
-      - name: Deploy to GitHub releases
-        uses: actions/upload-release-asset@v1
+      - name: Distribute APK
+        uses: firebase/app-distribution-action@v1
         with:
-          asset_path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-          asset_name: app-arm64-v8a-release.apk
-          tag_name: v${{ github.ref }}
-          release_title: Release ${{ github.ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Deploy to Firebase App Distribution
-        uses: wzieba/Firebase-App-Distribution-Github-Action@v1.0
-        with:
-          appId: ${{ env.FIREBASE_APP_ID }}
-          distributionKey: ${{ secrets.FIREBASE_DISTRIBUTION_KEY }}
-          releaseNotes: "This is a release notes for v${{ github.ref }}"
-          apkPath: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-
-      - name: Deploy to Firebase Hosting
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          app: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          apk: build/app/outputs/flutter-apk/app-release.apk
