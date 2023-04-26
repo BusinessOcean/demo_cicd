@@ -1,155 +1,155 @@
-name: CI/CD for Flutter App
+# name: CI/CD for Flutter App
 
-on:
-  push:
-    branches: [main]
+# on:
+#   push:
+#     branches: [main]
 
-env:
-  API_BASE_URL: https://example.com/api
-  ANDROID_KEYSTORE_FILE: android/key.jks
-  ANDROID_KEY_ALIAS: my-key-alias
-  ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
-  ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-  IOS_DEVELOPMENT_TEAM_ID: ABC123DEF456
-  IOS_PROVISIONING_PROFILE_NAME: MyProfileName
-  IOS_CERTIFICATE_P12_FILE: ios/cert.p12
-  IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-  GOOGLE_PLAY_STORE_TOKEN: ${{ secrets.GOOGLE_PLAY_STORE_TOKEN }}
+# env:
+#   API_BASE_URL: https://example.com/api
+#   ANDROID_KEYSTORE_FILE: android/key.jks
+#   ANDROID_KEY_ALIAS: my-key-alias
+#   ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+#   ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+#   IOS_DEVELOPMENT_TEAM_ID: ABC123DEF456
+#   IOS_PROVISIONING_PROFILE_NAME: MyProfileName
+#   IOS_CERTIFICATE_P12_FILE: ios/cert.p12
+#   IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+#   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+#   GOOGLE_PLAY_STORE_TOKEN: ${{ secrets.GOOGLE_PLAY_STORE_TOKEN }}
 
-jobs:
-  build_and_test:
-    runs-on: ubuntu-latest
+# jobs:
+#   build_and_test:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "2.10.2"
+#       - name: Setup Flutter
+#         uses: subosito/flutter-action@v2
+#         with:
+#           flutter-version: "2.10.2"
 
-      - name: Get dependencies
-        run: flutter pub get
+#       - name: Get dependencies
+#         run: flutter pub get
 
-      - name: Run tests
-        run: flutter test
+#       - name: Run tests
+#         run: flutter test
 
-  build_android:
-    runs-on: ubuntu-latest
+#   build_android:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "2.10.2"
+#       - name: Setup Flutter
+#         uses: subosito/flutter-action@v2
+#         with:
+#           flutter-version: "2.10.2"
 
-      - name: Get dependencies
-        run: flutter pub get
+#       - name: Get dependencies
+#         run: flutter pub get
 
-      - name: Build APK
-        run: flutter build apk --release
+#       - name: Build APK
+#         run: flutter build apk --release
 
-      - name: Upload to Google Play Store
-        uses: r0adkll/upload-github-action@v4
-        if: matrix.os == 'ubuntu-latest'
-        with:
-          files: build/app/outputs/flutter-apk/app-release.apk
-          token: ${{ secrets.GOOGLE_PLAY_STORE_TOKEN }}
-          release_notes: release_notes.txt
-          track: internal
+#       - name: Upload to Google Play Store
+#         uses: r0adkll/upload-github-action@v4
+#         if: matrix.os == 'ubuntu-latest'
+#         with:
+#           files: build/app/outputs/flutter-apk/app-release.apk
+#           token: ${{ secrets.GOOGLE_PLAY_STORE_TOKEN }}
+#           release_notes: release_notes.txt
+#           track: internal
 
-  build_ios:
-    runs-on: macos-latest
+#   build_ios:
+#     runs-on: macos-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "2.10.2"
+#       - name: Setup Flutter
+#         uses: subosito/flutter-action@v2
+#         with:
+#           flutter-version: "2.10.2"
 
-      - name: Get dependencies
-        run: flutter pub get
+#       - name: Get dependencies
+#         run: flutter pub get
 
-      - name: Build iOS app
-        run: flutter build ios --release --no-codesign
+#       - name: Build iOS app
+#         run: flutter build ios --release --no-codesign
 
-      - name: Install Certificates and Provisioning Profiles
-        uses: MaxBittker/action-ios-codesigning@v2.2
-        with:
-          p12: ${{ secrets.IOS_CERTIFICATE_P12_FILE }}
-          p12_password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-          provisioning_profile: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
-          team_id: ${{ env.IOS_DEVELOPMENT_TEAM_ID }}
-          bundle_id: com.example.myapp
+#       - name: Install Certificates and Provisioning Profiles
+#         uses: MaxBittker/action-ios-codesigning@v2.2
+#         with:
+#           p12: ${{ secrets.IOS_CERTIFICATE_P12_FILE }}
+#           p12_password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+#           provisioning_profile: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+#           team_id: ${{ env.IOS_DEVELOPMENT_TEAM_ID }}
+#           bundle_id: com.example.myapp
 
-      - name: Build IPA
-        uses: vanekjar/flutter-action-build-ios@v2.2
-        with:
-          build_mode: release
-          build_name: Runner
-          build_target: lib/main.dart
-          build_dir: build/ios
-          runner_workspace: .
+#       - name: Build IPA
+#         uses: vanekjar/flutter-action-build-ios@v2.2
+#         with:
+#           build_mode: release
+#           build_name: Runner
+#           build_target: lib/main.dart
+#           build_dir: build/ios
+#           runner_workspace: .
 
-      - name: Upload to App Store
-        uses: MaxBittker/action-ios-app-store@v1.1
-        with:
-          api_key: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-          api_key_id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          issuer_id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          ipa_path: build/ios/Runner.ipa
-          app_id: 1234567890
-          release_type: internal
-          submit_for_review: false
+#       - name: Upload to App Store
+#         uses: MaxBittker/action-ios-app-store@v1.1
+#         with:
+#           api_key: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+#           api_key_id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+#           issuer_id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+#           ipa_path: build/ios/Runner.ipa
+#           app_id: 1234567890
+#           release_type: internal
+#           submit_for_review: false
 
-  build_web:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+#   build_web:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v1.0.0
-          release_name: Release v1.0.0
-          body: |
-            Changes in this release:
-            - Added feature A
-            - Fixed issue B
-          draft: false
-          prerelease: false
+#       - name: Create Release
+#         id: create_release
+#         uses: actions/create-release@v1.0.0
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           tag_name: v1.0.0
+#           release_name: Release v1.0.0
+#           body: |
+#             Changes in this release:
+#             - Added feature A
+#             - Fixed issue B
+#           draft: false
+#           prerelease: false
 
-      - name: Upload Android APK to Release
-        uses: r0adkll/upload-github-action@v4
-        if: matrix.os == 'ubuntu-latest'
-        with:
-          files: build/app/outputs/flutter-apk/app-release.apk
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release_id: ${{ steps.create_release.outputs.id }}
+#       - name: Upload Android APK to Release
+#         uses: r0adkll/upload-github-action@v4
+#         if: matrix.os == 'ubuntu-latest'
+#         with:
+#           files: build/app/outputs/flutter-apk/app-release.apk
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#           release_id: ${{ steps.create_release.outputs.id }}
 
-      - name: Upload iOS IPA to Release
-        uses: r0adkll/upload-github-action@v4
-        if: matrix.os == 'macos-latest'
-        with:
-          files: build/ios/Runner.ipa
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release_id: ${{ steps.create_release.outputs.id }}
+#       - name: Upload iOS IPA to Release
+#         uses: r0adkll/upload-github-action@v4
+#         if: matrix.os == 'macos-latest'
+#         with:
+#           files: build/ios/Runner.ipa
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#           release_id: ${{ steps.create_release.outputs.id }}
 
-      - name: Upload Web App to Release
-        uses: maxkomarychev/octions@0.0.7
-        if: matrix.os == 'ubuntu-latest'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          args: "releases/upload-asset --url ${{ steps.create_release.outputs.upload_url }} --asset-path build/web/main.dart.js --name web-app.js"
+#       - name: Upload Web App to Release
+#         uses: maxkomarychev/octions@0.0.7
+#         if: matrix.os == 'ubuntu-latest'
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           args: "releases/upload-asset --url ${{ steps.create_release.outputs.upload_url }} --asset-path build/web/main.dart.js --name web-app.js"
