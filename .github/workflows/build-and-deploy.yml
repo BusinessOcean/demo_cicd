@@ -11,7 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Set up Flutter
-        uses: subosito/flutter-action@v1.6.1
+        uses: subosito/flutter-action@v2.1.0
         with:
           flutter-version: stable
       - name: Get dependencies
@@ -22,30 +22,33 @@ jobs:
         env:
           BUILD_NUMBER: ${{ github.run_number }}
       - name: Build iOS IPA
-        uses: vanekjar/flutter-action-build-ios@v1
+        uses: xavierha/ios-build@v3
         with:
-          args: --release
+          project_directory: .
+          configuration: Release
         if: matrix.os == 'macos-latest'
       - name: Upload to Google Play Store
-        uses: r0adkll/upload-github-action@master
+        uses: r0adkll/upload-github-action@v2.1.0
         if: matrix.os == 'ubuntu-latest'
         with:
           files: build/app/outputs/flutter-apk/app-release.apk
           token: ${{ secrets.GOOGLE_PLAY_STORE_TOKEN }}
-          releaseNotesFile: release_notes.txt
-          track: "internal"
+          release_notes: release_notes.txt
+          track: internal
       - name: Upload to App Store
-        uses: limao777/ios-app-store-upload@v1.3.1
+        uses: MaxBittker/action-ios-app-store@v1
         if: matrix.os == 'macos-latest'
         with:
-          appId: ${{ secrets.APP_STORE_APP_ID }}
+          app_id: ${{ secrets.APP_STORE_APP_ID }}
           username: ${{ secrets.APP_STORE_USERNAME }}
           password: ${{ secrets.APP_STORE_PASSWORD }}
-          ipaPath: Runner.ipa
+          ipa_path: Runner.ipa
       - name: Build and Deploy web app
-        uses: FirebaseExtended/flutterfire-actions@v1.9.1
+        uses: FirebaseExtended/action-hosting-deploy@v0.9.0
         with:
-          args: build web
-          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+          firebase_version: "9.4.1"
+          project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
+          debug: false
+          message: "Deploying web app"
         if: matrix.os == 'ubuntu-latest'
