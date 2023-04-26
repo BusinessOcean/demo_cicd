@@ -35,6 +35,10 @@ jobs:
         with:
           github-token: ${{ env.GH_TOKEN }}
           script: |
+            const { Octokit } = require("@octokit/rest");
+            const octokit = new Octokit({
+              auth: process.env.GH_TOKEN,
+            });
             const { data } = await octokit.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
