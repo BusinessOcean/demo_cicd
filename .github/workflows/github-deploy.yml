@@ -28,7 +28,6 @@ jobs:
 
       - name: Build APK
         run: flutter build apk --release
-
       # - name: Build IPA
       #   run: |
       #     cd ios/
