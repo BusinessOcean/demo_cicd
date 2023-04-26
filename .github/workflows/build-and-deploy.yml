@@ -22,13 +22,28 @@ jobs:
         env:
           BUILD_NUMBER: ${{ github.run_number }}
       - name: Build iOS IPA
-        uses: xavierha/ios-build@v3
-        with:
-          project_directory: .
-          configuration: Release
+        uses: apple-actions/setup-ios@v1
         if: matrix.os == 'macos-latest'
+      - name: Archive iOS app
+        uses: apple-actions/create-xcarchive@v1
+        if: matrix.os == 'macos-latest'
+        with:
+          scheme: Runner
+          xcarchive-path: ${{ github.workspace }}/ios
+      - name: Export iOS app
+        uses: apple-actions/export-from-archive@v1
+        if: matrix.os == 'macos-latest'
+        with:
+          archive-path: ${{ github.workspace }}/ios.xcarchive
+          export-options: |
+            {
+              "method": "app-store",
+              "uploadBitcode": true,
+              "uploadSymbols": true
+            }
+          export-path: ${{ github.workspace }}
       - name: Upload to Google Play Store
-        uses: r0adkll/upload-github-action@v2.1.0
+        uses: r0adkll/upload-github-action@v4
         if: matrix.os == 'ubuntu-latest'
         with:
           files: build/app/outputs/flutter-apk/app-release.apk
@@ -36,18 +51,18 @@ jobs:
           release_notes: release_notes.txt
           track: internal
       - name: Upload to App Store
-        uses: MaxBittker/action-ios-app-store@v1
+        uses: jasonbellamy/apple-appstore-upload@v1
         if: matrix.os == 'macos-latest'
         with:
-          app_id: ${{ secrets.APP_STORE_APP_ID }}
           username: ${{ secrets.APP_STORE_USERNAME }}
           password: ${{ secrets.APP_STORE_PASSWORD }}
-          ipa_path: Runner.ipa
+          app_id: ${{ secrets.APP_STORE_APP_ID }}
+          ipa_path: ${{ github.workspace }}/Runner.ipa
       - name: Build and Deploy web app
-        uses: FirebaseExtended/action-hosting-deploy@v0.9.0
+        uses: FirebaseExtended/firebase-actions/hosting-deploy@v0.8.0
         with:
-          firebase_version: "9.4.1"
-          project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
+          firebase-version: "9.4.1"
+          project-id: ${{ secrets.FIREBASE_PROJECT_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           debug: false
           message: "Deploying web app"
