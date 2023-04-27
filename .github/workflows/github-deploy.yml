@@ -15,7 +15,11 @@ jobs:
   build:
     permissions:
       issues: write
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        apk_arch: [armeabi-v7a, arm64-v8a]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -29,10 +33,11 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --release
+        if: matrix.os == 'ubuntu-latest'
+        run: flutter build apk --${{ matrix.apk_arch }} --release
+
       - name: Install CocoaPods
-        run: sudo gem install cocoapods
-      - name: Build IPA
+        if: matrix.os == 'macos-latest'
         run: |
           cd ios/
           pod install
