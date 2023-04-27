@@ -6,7 +6,6 @@ on:
       - main
 
 env:
-  JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
   FLUTTER_VERSION: "3.7.7"
   GH_REPO: "BusinessOcean/demo_cicd"
   GH_RELEASE_TAG: "v1.0.0"
@@ -16,7 +15,7 @@ jobs:
   build:
     permissions:
       issues: write
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -70,6 +69,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: id,
-              name: 'demo-cicd.ipa',
+              name: 'my-app.ipa',
               data: Buffer.from(require('fs').readFileSync('./ios/Runner.xcarchive/Products/Applications/Runner.ipa'))
             });
