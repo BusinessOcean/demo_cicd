@@ -8,13 +8,12 @@ on:
 env:
   FLUTTER_VERSION: "3.7.7"
   GH_REPO: "BusinessOcean/demo_cicd"
-  GH_RELEASE_TAG: "v1.0.0"
+  GH_RELEASE_TAG: "v1.0.1"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
 jobs:
   build:
-    permissions:
-      issues: write
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
