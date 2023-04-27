@@ -67,10 +67,11 @@ jobs:
               name: 'demo-cicd.apk',
               data: Buffer.from(require('fs').readFileSync('./build/app/outputs/flutter-apk/app-release.apk'))
             });
-            # await octokit.repos.uploadReleaseAsset({
-            #   owner: context.repo.owner,
-            #   repo: context.repo.repo,
-            #   release_id: id,
-            #   name: 'my-app.ipa',
-            #   data: Buffer.from(require('fs').readFileSync('./ios/Runner.xcarchive/Products/Applications/Runner.ipa'))
-            # });
+
+# await octokit.repos.uploadReleaseAsset({
+#   owner: context.repo.owner,
+#   repo: context.repo.repo,
+#   release_id: id,
+#   name: 'my-app.ipa',
+#   data: Buffer.from(require('fs').readFileSync('./ios/Runner.xcarchive/Products/Applications/Runner.ipa'))
+# });
