@@ -30,6 +30,8 @@ jobs:
 
       - name: Build APK
         run: flutter build apk --release
+      - name: Install CocoaPods
+        run: sudo gem install cocoapods
       - name: Build IPA
         run: |
           cd ios/
