@@ -9,7 +9,7 @@ env:
   FLUTTER_VERSION: "3.7.7"
   GH_REPO: "BusinessOcean/demo_cicd"
   GH_RELEASE_TAG: "v1.0.0"
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN  }}
 
 jobs:
   build:
