@@ -9,7 +9,7 @@ env:
   FLUTTER_VERSION: "3.7.7"
   GH_REPO: "BusinessOcean/demo_cicd"
   GH_RELEASE_TAG: "v1.0.0"
-  GH_TOKEN: ${{ secrets.GH_TOKEN  }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
 jobs:
   build:
@@ -40,11 +40,11 @@ jobs:
       - name: Create GitHub release
         uses: actions/github-script@v4
         with:
-          github-token: ${{ env.GH_TOKEN }}
+          github-token: ${{ env.GITHUB_TOKEN }}
           script: |
             const { Octokit } = require("@octokit/rest");
             const octokit = new Octokit({
-              auth: process.env.GH_TOKEN,
+              auth: env.GITHUB_TOKEN,
             });
             const { data } = await octokit.repos.createRelease({
               owner: context.repo.owner,
@@ -60,7 +60,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: id,
-              name: 'my-app.apk',
+              name: 'demo-cicd.apk',
               data: Buffer.from(require('fs').readFileSync('./build/app/outputs/flutter-apk/app-release.apk'))
             });
   # owner: context.repo.owner,
