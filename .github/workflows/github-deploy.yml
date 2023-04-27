@@ -15,11 +15,7 @@ jobs:
   build:
     permissions:
       issues: write
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        apk_arch: [armeabi-v7a, arm64-v8a]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -33,15 +29,14 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        if: matrix.os == 'ubuntu-latest'
-        run: flutter build apk --${{ matrix.apk_arch }} --release
-
-      - name: Install CocoaPods
-        if: matrix.os == 'macos-latest'
-        run: |
-          cd ios/
-          pod install
-          xcodebuild clean archive -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath Runner.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+        run: flutter build apk --release
+      # - name: Install CocoaPods
+      #   run: sudo gem install cocoapods
+      # - name: Build IPA
+      #   run: |
+      #     cd ios/
+      #     pod install
+      #     xcodebuild clean archive -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath Runner.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 
       - name: Install octokit/rest
         run: npm install @octokit/rest
@@ -72,10 +67,10 @@ jobs:
               name: 'demo-cicd.apk',
               data: Buffer.from(require('fs').readFileSync('./build/app/outputs/flutter-apk/app-release.apk'))
             });
-            await octokit.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: id,
-              name: 'my-app.ipa',
-              data: Buffer.from(require('fs').readFileSync('./ios/Runner.xcarchive/Products/Applications/Runner.ipa'))
-            });
+            # await octokit.repos.uploadReleaseAsset({
+            #   owner: context.repo.owner,
+            #   repo: context.repo.repo,
+            #   release_id: id,
+            #   name: 'my-app.ipa',
+            #   data: Buffer.from(require('fs').readFileSync('./ios/Runner.xcarchive/Products/Applications/Runner.ipa'))
+            # });
